@@ -1,64 +1,65 @@
-import React from 'react';
+ import { CORES } from '../services/theme';
+ import React from 'react';
 import {
   StyleSheet,
   Text,
   View,
   Image,
   TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
+      <StatusBar
+        backgroundColor="#20345C"
+        barStyle="light-content"
+      />
 
-      <View style={styles.logoContainer}>
-        <Image
-          source={require('../assets/logo.jpg')}
-          style={styles.logo}
-        />
+      <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('../assets/logo.jpg')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
+
+        <Text style={styles.titulo}>APP Scholar</Text>
+
+        <Text style={styles.subtitulo}>
+          Sistema Acadêmico Mobile
+        </Text>
       </View>
 
-      <Text style={styles.titulo}>
-        APP Scholar
-      </Text>
+      <View style={styles.conteudo}>
+        <Text style={styles.boasVindas}>
+          Bem-vindo!
+        </Text>
 
-      <Text style={styles.subtitulo}>
-        Sistema Acadêmico Mobile
-      </Text>
+        <Text style={styles.descricao}>
+          Acesse o sistema para gerenciar as informações
+          acadêmicas de forma simples e organizada.
+        </Text>
 
-      <View style={styles.linha} />
-
-      <Text style={styles.descricao}>
-        Gerencie alunos, professores, cursos e
-        informações acadêmicas em um só lugar.
-      </Text>
-
-      <TouchableOpacity
-        style={styles.botao}
-        onPress={() => navigation.navigate('Cadastros')}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.icone}>📚</Text>
-
-        <View style={styles.textoContainer}>
+        <TouchableOpacity
+          style={styles.botao}
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('Cadastros')}
+        >
           <Text style={styles.textoBotao}>
             Entrar no sistema
           </Text>
+          <Text style={styles.seta}>›</Text>
+        </TouchableOpacity>
+      </View>
 
-          <Text style={styles.textoSecundario}>
-            Acessar cadastros
-          </Text>
-        </View>
-
-        <Text style={styles.seta}>
-          ›
+      <View style={styles.rodape}>
+        <Text style={styles.textoRodape}>
+          APP Scholar • Gestão Acadêmica
         </Text>
-      </TouchableOpacity>
-
-      <Text style={styles.rodape}>
-        APP Scholar • Sistema Acadêmico
-      </Text>
-
+      </View>
     </View>
   );
 }
@@ -66,92 +67,91 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: CORES.fundo,
+  },
+  header: {
+    backgroundColor: CORES.principal,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 25,
+    paddingTop: 45,
+    paddingBottom: 55,
+    paddingHorizontal: 24,
+    borderBottomLeftRadius: 35,
+    borderBottomRightRadius: 35,
   },
-
   logoContainer: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
+    width: 145,
+    height: 145,
+    backgroundColor: CORES.branco,
+    borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 18,
+    marginBottom: 22,
+    elevation: 5,
   },
-
   logo: {
-    width: 165,
-    height: 165,
-    borderRadius: 82,
-    resizeMode: 'contain',
+    width: 125,
+    height: 125,
+    borderRadius: 20,
   },
-
   titulo: {
-    fontSize: 38,
+    fontSize: 31,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 6,
+    color: CORES.branco,
+    letterSpacing: 0.5,
   },
-
   subtitulo: {
-    fontSize: 17,
-    textAlign: 'center',
-  },
-
-  linha: {
-    width: 70,
-    height: 4,
-    borderRadius: 5,
-    marginVertical: 22,
-  },
-
-  descricao: {
     fontSize: 15,
-    lineHeight: 22,
+    color: '#E9DDF8',
+    marginTop: 8,
     textAlign: 'center',
-    marginBottom: 28,
-    paddingHorizontal: 15,
   },
-
+  conteudo: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 28,
+  },
+  boasVindas: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: CORES.principal,
+    marginBottom: 12,
+  },
+  descricao: {
+    fontSize: 16,
+    color: '#667085',
+    lineHeight: 25,
+    marginBottom: 30,
+  },
   botao: {
+    backgroundColor: CORES.botao,
     width: '100%',
-    minHeight: 75,
-    borderRadius: 18,
+    minHeight: 58,
+    borderRadius: 15,
+    paddingHorizontal: 22,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    justifyContent: 'center',
+    elevation: 3,
   },
-
-  icone: {
-    fontSize: 28,
-    marginRight: 15,
-  },
-
-  textoContainer: {
-    flex: 1,
-  },
-
   textoBotao: {
-    fontSize: 18,
+    color: CORES.branco,
+    fontSize: 17,
     fontWeight: 'bold',
   },
-
-  textoSecundario: {
-    fontSize: 13,
-    marginTop: 3,
-    opacity: 0.65,
-  },
-
   seta: {
-    fontSize: 32,
+    color: CORES.branco,
+    fontSize: 28,
     fontWeight: 'bold',
-  },
-
-  rodape: {
     position: 'absolute',
-    bottom: 20,
+    right: 20,
+  },
+  rodape: {
+    alignItems: 'center',
+    paddingVertical: 18,
+  },
+  textoRodape: {
+    color: '#8A94A6',
     fontSize: 12,
-    opacity: 0.5,
   },
 });

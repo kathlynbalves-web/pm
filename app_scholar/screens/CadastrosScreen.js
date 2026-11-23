@@ -5,120 +5,191 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  StatusBar,
 } from 'react-native';
+import { CORES } from '../services/theme';
+
+const opcoes = [
+  { titulo: 'Alunos', descricao: 'Cadastrar e consultar alunos', tela: 'Alunos', numero: '01' },
+  { titulo: 'Professores', descricao: 'Gerenciar professores', tela: 'Professores', numero: '02' },
+  { titulo: 'Responsáveis', descricao: 'Gerenciar responsáveis', tela: 'Responsaveis', numero: '03' },
+  { titulo: 'Cursos', descricao: 'Gerenciar cursos', tela: 'Cursos', numero: '04' },
+  { titulo: 'Disciplinas', descricao: 'Gerenciar disciplinas', tela: 'Disciplinas', numero: '05' },
+  { titulo: 'Matrículas', descricao: 'Registrar matrículas', tela: 'Matriculas', numero: '06' },
+  { titulo: 'Turmas', descricao: 'Gerenciar turmas', tela: 'Turmas', numero: '07' },
+  { titulo: 'Avaliações', descricao: 'Registrar avaliações e notas', tela: 'Avaliacoes', numero: '08' },
+  { titulo: 'Coordenadores', descricao: 'Gerenciar coordenadores', tela: 'Coordenadores', numero: '09' },
+  { titulo: 'Boletim', descricao: 'Consultar notas dos alunos', tela: 'Boletim', numero: '10' },
+];
 
 export default function CadastrosScreen({ navigation }) {
-  const telas = [
-    { nome: 'Alunos', icone: '', tela: 'Alunos' },
-    { nome: 'Professores', icone: '', tela: 'Professores' },
-    { nome: 'Responsáveis', icone: '', tela: 'Responsaveis' },
-    { nome: 'Cursos', icone: '', tela: 'Cursos' },
-    { nome: 'Disciplinas', icone: '', tela: 'Disciplinas' },
-    { nome: 'Matrículas', icone: '', tela: 'Matriculas' },
-    { nome: 'Turmas', icone: '', tela: 'Turmas' },
-    { nome: 'Avaliações', icone: '', tela: 'Avaliacoes' },
-    { nome: 'Coordenadores', icone: '', tela: 'Coordenadores' },
-    { nome: 'Boletim', icone: '', tela: 'Boletim' },
-  ];
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
+      <StatusBar
+        backgroundColor="#20345C"
+        barStyle="light-content"
+      />
 
-      <Text style={styles.titulo}>Cadastros</Text>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.setaVoltar}>‹</Text>
+        </TouchableOpacity>
 
-      <Text style={styles.subtitulo}>
-        Escolha uma opção
-      </Text>
-
-      <View style={styles.lista}>
-        {telas.map((item) => (
-          <TouchableOpacity
-            key={item.tela}
-            style={styles.card}
-            onPress={() => navigation.navigate(item.tela)}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.icone}>{item.icone}</Text>
-
-            <Text style={styles.nome}>
-              {item.nome}
-            </Text>
-
-            <Text style={styles.seta}>›</Text>
-          </TouchableOpacity>
-        ))}
+        <View style={styles.headerTexto}>
+          <Text style={styles.titulo}>Menu Acadêmico</Text>
+          <Text style={styles.subtitulo}>
+            Selecione uma opção para continuar
+          </Text>
+        </View>
       </View>
 
-      <TouchableOpacity
-        style={styles.voltar}
-        onPress={() => navigation.goBack()}
+      <ScrollView
+        contentContainerStyle={styles.lista}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.textoVoltar}>← Voltar</Text>
-      </TouchableOpacity>
+        {opcoes.map((opcao) => (
+          <TouchableOpacity
+            key={opcao.tela}
+            style={styles.card}
+            activeOpacity={0.75}
+            onPress={() => navigation.navigate(opcao.tela)}
+          >
+            <View style={styles.numeroContainer}>
+              <Text style={styles.numero}>
+                {opcao.numero}
+              </Text>
+            </View>
 
-    </ScrollView>
+            <View style={styles.cardTexto}>
+              <Text style={styles.cardTitulo}>
+                {opcao.titulo}
+              </Text>
+              <Text style={styles.cardDescricao}>
+                {opcao.descricao}
+              </Text>
+            </View>
+
+            <Text style={styles.setaDireita}>›</Text>
+          </TouchableOpacity>
+        ))}
+
+        <TouchableOpacity
+          style={styles.botaoInicio}
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('Home')}
+        >
+          <Text style={styles.textoBotaoInicio}>
+            Voltar ao início
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: 30,
-    paddingBottom: 30,
+    flex: 1,
+    backgroundColor: CORES.fundo,
   },
-
-  titulo: {
-    fontSize: 34,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 6,
-  },
-
-  subtitulo: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 25,
-  },
-
-  lista: {
-    width: '100%',
-  },
-
-  card: {
-    width: '100%',
-    minHeight: 68,
-    borderRadius: 16,
+  header: {
+    backgroundColor: CORES.principal,
+    paddingHorizontal: 22,
+    paddingTop: 22,
+    paddingBottom: 28,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 18,
-    marginBottom: 12,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
   },
-
-  icone: {
-    fontSize: 25,
+  botaoVoltar: {
     width: 45,
-  },
-
-  nome: {
-    flex: 1,
-    fontSize: 17,
-    fontWeight: 'bold',
-  },
-
-  seta: {
-    fontSize: 30,
-    fontWeight: 'bold',
-  },
-
-  voltar: {
+    height: 45,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center',
-    marginTop: 15,
-    paddingVertical: 12,
+    justifyContent: 'center',
+    marginRight: 14,
   },
-
-  textoVoltar: {
+  setaVoltar: {
+    fontSize: 34,
+    color: CORES.branco,
+    lineHeight: 38,
+  },
+  headerTexto: {
+    flex: 1,
+  },
+  titulo: {
+    fontSize: 23,
+    fontWeight: 'bold',
+    color: CORES.branco,
+  },
+  subtitulo: {
+    fontSize: 13,
+    color: '#E9DDF8',
+    marginTop: 6,
+  },
+  lista: {
+    padding: 18,
+    paddingBottom: 35,
+  },
+  card: {
+    backgroundColor: CORES.branco,
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E7EBF3',
+    elevation: 2,
+  },
+  numeroContainer: {
+    width: 46,
+    height: 46,
+    borderRadius: 13,
+    backgroundColor: '#EDE5F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  numero: {
+    color: CORES.botao,
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  cardTexto: {
+    flex: 1,
+  },
+  cardTitulo: {
+    color: CORES.principal,
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  cardDescricao: {
+    color: '#778196',
+    fontSize: 12,
+    marginTop: 5,
+  },
+  setaDireita: {
+    fontSize: 27,
+    color: CORES.botao,
+    marginLeft: 8,
+  },
+  botaoInicio: {
+    backgroundColor: CORES.botao,
+    paddingVertical: 15,
+    borderRadius: 13,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  textoBotaoInicio: {
+    color: CORES.branco,
+    fontSize: 15,
     fontWeight: 'bold',
   },
 });

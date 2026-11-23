@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+ import React, { useState } from 'react';
 
 import HomeScreen from './screens/HomeScreen';
 import CadastrosScreen from './screens/CadastrosScreen';
@@ -17,13 +17,15 @@ import BoletimScreen from './screens/BoletimScreen';
 export default function App() {
   const [tela, setTela] = useState('Home');
 
-  const voltar = () => {
-    if (tela === 'Cadastros') {
+  function voltar() {
+    if (tela === 'Home') {
+      setTela('Home');
+    } else if (tela === 'Cadastros') {
       setTela('Home');
     } else {
       setTela('Cadastros');
     }
-  };
+  }
 
   const navigation = {
     navigate: (nomeTela) => setTela(nomeTela),
@@ -31,6 +33,9 @@ export default function App() {
   };
 
   switch (tela) {
+    case 'Home':
+      return <HomeScreen navigation={navigation} />;
+
     case 'Cadastros':
       return <CadastrosScreen navigation={navigation} />;
 
@@ -38,7 +43,7 @@ export default function App() {
       return <AlunosScreen navigation={navigation} />;
 
     case 'ConsultarAlunos':
-  return <ConsultarAlunosScreen navigation={navigation} />;
+      return <ConsultarAlunosScreen navigation={navigation} />;
 
     case 'Professores':
       return <ProfessoresScreen navigation={navigation} />;

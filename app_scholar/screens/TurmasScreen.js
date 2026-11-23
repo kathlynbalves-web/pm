@@ -1,127 +1,214 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  StyleSheet,
+  View,
   Text,
   TextInput,
   TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
   ScrollView,
 } from 'react-native';
+import { API_URL } from '../services/api';
+import { CORES } from '../services/theme';
 
 export default function TurmasScreen({ navigation }) {
+  const [nome, setNome] = useState('');
+  const [periodo, setPeriodo] = useState('');
+  const [anoLetivo, setAnoLetivo] = useState('');
+  const [carregando, setCarregando] = useState(false);
+
+  async function cadastrarTurma() {
+    if (!nome.trim() || !periodo.trim() || !anoLetivo.trim()) {
+      Alert.alert(
+        'Atenção',
+        'Preencha o nome da turma, o período e o ano letivo.'
+      );
+      return;
+    }
+
+    if (!/^\d{4}$/.test(anoLetivo.trim())) {
+      Alert.alert('Atenção', 'Informe o ano letivo com quatro números.');
+      return;
+    }
+
+    try {
+      setCarregando(true);
+
+      const resposta = await fetch(`${API_URL}/cadastrar_turma.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: nome.trim(),
+          periodo: periodo.trim(),
+          ano_letivo: Number(anoLetivo),
+        }),
+      });
+
+      const texto = await resposta.text();
+      let resultado;
+
+      try {
+        resultado = JSON.parse(texto);
+      } catch {
+        throw new Error(
+          'O servidor não retornou uma resposta JSON válida.'
+        );
+      }
+
+      if (
+        !resposta.ok ||
+        resultado.erro ||
+        resultado.sucesso === false
+      ) {
+        throw new Error(
+          resultado.erro ||
+          resultado.mensagem ||
+          'Não foi possível cadastrar a turma.'
+        );
+      }
+
+      Alert.alert(
+        'Sucesso',
+        resultado.mensagem || 'Turma cadastrada com sucesso!'
+      );
+
+      setNome('');
+      setPeriodo('');
+      setAnoLetivo('');
+    } catch (erro) {
+      Alert.alert(
+        'Erro',
+        erro.message || 'Não foi possível conectar ao servidor.'
+      );
+    } finally {
+      setCarregando(false);
+    }
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-
-      <Text style={styles.icone}></Text>
-
-      <Text style={styles.titulo}>Turmas</Text>
-
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.conteudo}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={styles.titulo}>Cadastrar Turma</Text>
       <Text style={styles.subtitulo}>
-        Cadastro de turma
+        Preencha os dados da turma
       </Text>
 
+      <Text style={styles.label}>Nome da turma *</Text>
       <TextInput
         style={styles.input}
-        placeholder="Nome da turma"
+        placeholder="Ex.: 1º A"
+        value={nome}
+        onChangeText={setNome}
+        maxLength={80}
       />
 
+      <Text style={styles.label}>Período *</Text>
       <TextInput
         style={styles.input}
-        placeholder="Curso"
+        placeholder="Ex.: Manhã, tarde ou noite"
+        value={periodo}
+        onChangeText={setPeriodo}
+        maxLength={40}
       />
 
+      <Text style={styles.label}>Ano letivo *</Text>
       <TextInput
         style={styles.input}
-        placeholder="Período"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Ano letivo"
+        placeholder="Ex.: 2026"
+        value={anoLetivo}
+        onChangeText={setAnoLetivo}
         keyboardType="numeric"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Professor responsável"
+        maxLength={4}
       />
 
       <TouchableOpacity
-        style={styles.botao}
-        onPress={() => alert('Turma cadastrada com sucesso!')}
-        activeOpacity={0.8}
+        style={[styles.botao, carregando && styles.desativado]}
+        onPress={cadastrarTurma}
+        disabled={carregando}
       >
-        <Text style={styles.textoBotao}>
-         Cadastrar Turma
-        </Text>
+        {carregando ? (
+          <ActivityIndicator color="#FFFFFF" />
+        ) : (
+          <Text style={styles.textoBotao}>Cadastrar Turma</Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.voltar}
+        style={styles.botaoVoltar}
         onPress={() => navigation.goBack()}
       >
-        <Text style={styles.textoVoltar}>
-        Voltar
-        </Text>
+        <Text style={styles.textoVoltar}>Voltar</Text>
       </TouchableOpacity>
-
     </ScrollView>
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    padding: 25,
-    paddingTop: 30,
+    flex: 1,
+    backgroundColor: CORES.fundo,
   },
-
-  icone: {
-    fontSize: 42,
-    textAlign: 'center',
-    marginBottom: 5,
+  conteudo: {
+    padding: 24,
+    paddingBottom: 40,
   },
-
   titulo: {
-    fontSize: 32,
+    fontSize: 26,
     fontWeight: 'bold',
-    textAlign: 'center',
+    color: CORES.principal,
+    marginBottom: 8,
   },
-
   subtitulo: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 5,
+    fontSize: 15,
+    color: '#667085',
     marginBottom: 28,
   },
-
-  input: {
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 15,
-    fontSize: 16,
+  label: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: CORES.principal,
+    marginBottom: 8,
   },
-
+  input: {
+    backgroundColor: CORES.branco,
+    borderWidth: 1,
+    borderColor: '#D8DEEA',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    fontSize: 16,
+    marginBottom: 20,
+  },
   botao: {
-    borderRadius: 14,
-    paddingVertical: 16,
+    backgroundColor: CORES.botao,
+    paddingVertical: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  desativado: {
+    opacity: 0.7,
+  },
+  textoBotao: {
+    color: CORES.branco,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  botaoVoltar: {
+    paddingVertical: 14,
     alignItems: 'center',
     marginTop: 8,
   },
-
-  textoBotao: {
-    fontSize: 17,
-    fontWeight: 'bold',
-  },
-
-  voltar: {
-    alignItems: 'center',
-    marginTop: 20,
-    paddingVertical: 12,
-  },
-
   textoVoltar: {
-    fontSize: 16,
+    color: CORES.principal,
+    fontSize: 15,
     fontWeight: 'bold',
   },
 });

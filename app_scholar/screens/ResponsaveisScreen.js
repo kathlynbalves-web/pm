@@ -1,3 +1,4 @@
+import { CORES } from '../services/theme';
 import React from 'react';
 import {
   StyleSheet,
@@ -76,6 +77,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 25,
     paddingTop: 30,
+    backgroundColor: CORES.fundo,
   },
 
   icone: {
@@ -88,6 +90,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
+    color: CORES.principal,
   },
 
   subtitulo: {
@@ -95,10 +98,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 5,
     marginBottom: 28,
+    color: '#68738A',
   },
 
   input: {
     borderWidth: 1,
+    borderColor: '#D9DFEA',
+    backgroundColor: CORES.branco,
     borderRadius: 14,
     padding: 16,
     marginBottom: 15,
@@ -106,6 +112,7 @@ const styles = StyleSheet.create({
   },
 
   botao: {
+    backgroundColor: CORES.botao,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
@@ -115,6 +122,7 @@ const styles = StyleSheet.create({
   textoBotao: {
     fontSize: 17,
     fontWeight: 'bold',
+    color: CORES.branco,
   },
 
   voltar: {
@@ -126,5 +134,6 @@ const styles = StyleSheet.create({
   textoVoltar: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: CORES.principal,
   },
 });

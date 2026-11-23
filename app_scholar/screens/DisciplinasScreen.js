@@ -1,127 +1,223 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  StyleSheet,
+  View,
   Text,
   TextInput,
   TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
   ScrollView,
 } from 'react-native';
+import { API_URL } from '../services/api';
+import { CORES } from '../services/theme';
 
 export default function DisciplinasScreen({ navigation }) {
+  const [nome, setNome] = useState('');
+  const [descricao, setDescricao] = useState('');
+  const [carregando, setCarregando] = useState(false);
+
+  async function cadastrarDisciplina() {
+    if (!nome.trim()) {
+      Alert.alert('Atenção', 'Informe o nome da disciplina.');
+      return;
+    }
+
+    try {
+      setCarregando(true);
+
+      const resposta = await fetch(
+        `${API_URL}/cadastrar_disciplina.php`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            nome: nome.trim(),
+            descricao: descricao.trim(),
+          }),
+        }
+      );
+
+      const texto = await resposta.text();
+      let resultado;
+
+      try {
+        resultado = JSON.parse(texto);
+      } catch {
+        throw new Error(
+          'O servidor não retornou uma resposta JSON válida.'
+        );
+      }
+
+      if (
+        !resposta.ok ||
+        resultado.erro ||
+        resultado.sucesso === false
+      ) {
+        throw new Error(
+          resultado.erro ||
+          resultado.mensagem ||
+          'Não foi possível cadastrar a disciplina.'
+        );
+      }
+
+      Alert.alert(
+        'Sucesso',
+        resultado.mensagem || 'Disciplina cadastrada com sucesso!'
+      );
+
+      setNome('');
+      setDescricao('');
+    } catch (erro) {
+      Alert.alert(
+        'Erro',
+        erro.message || 'Não foi possível conectar ao servidor.'
+      );
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  function limparCampos() {
+    setNome('');
+    setDescricao('');
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-
-      <Text style={styles.icone}></Text>
-
-      <Text style={styles.titulo}>Disciplinas</Text>
-
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.conteudo}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={styles.titulo}>Cadastrar Disciplina</Text>
       <Text style={styles.subtitulo}>
-        Cadastro de disciplina
+        Preencha os dados da disciplina
       </Text>
 
+      <Text style={styles.label}>Nome da disciplina *</Text>
       <TextInput
         style={styles.input}
-        placeholder="Nome da disciplina"
+        placeholder="Digite o nome da disciplina"
+        value={nome}
+        onChangeText={setNome}
+        maxLength={120}
       />
 
+      <Text style={styles.label}>Descrição</Text>
       <TextInput
-        style={styles.input}
-        placeholder="Código da disciplina"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Carga horária"
-        keyboardType="numeric"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Curso"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Professor responsável"
+        style={[styles.input, styles.textarea]}
+        placeholder="Digite a descrição da disciplina"
+        value={descricao}
+        onChangeText={setDescricao}
+        multiline
+        numberOfLines={4}
+        maxLength={500}
       />
 
       <TouchableOpacity
-        style={styles.botao}
-        onPress={() => alert('Disciplina cadastrada com sucesso!')}
-        activeOpacity={0.8}
+        style={[styles.botao, carregando && styles.desativado]}
+        onPress={cadastrarDisciplina}
+        disabled={carregando}
       >
-        <Text style={styles.textoBotao}>
-         Cadastrar Disciplina
-        </Text>
+        {carregando ? (
+          <ActivityIndicator color="#FFFFFF" />
+        ) : (
+          <Text style={styles.textoBotao}>
+            Cadastrar Disciplina
+          </Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.voltar}
+        style={styles.botaoSecundario}
+        onPress={limparCampos}
+        disabled={carregando}
+      >
+        <Text style={styles.textoSecundario}>Limpar campos</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.botaoVoltar}
         onPress={() => navigation.goBack()}
       >
-        <Text style={styles.textoVoltar}>
-        Voltar
-        </Text>
+        <Text style={styles.textoSecundario}>Voltar</Text>
       </TouchableOpacity>
-
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    padding: 25,
-    paddingTop: 30,
+    flex: 1,
+    backgroundColor: CORES.fundo,
   },
-
-  icone: {
-    fontSize: 42,
-    textAlign: 'center',
-    marginBottom: 5,
+  conteudo: {
+    padding: 24,
+    paddingBottom: 40,
   },
-
   titulo: {
-    fontSize: 32,
+    fontSize: 26,
     fontWeight: 'bold',
-    textAlign: 'center',
+    color: CORES.principal,
+    marginBottom: 8,
   },
-
   subtitulo: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 5,
+    fontSize: 15,
+    color: '#667085',
     marginBottom: 28,
   },
-
-  input: {
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 15,
-    fontSize: 16,
+  label: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: CORES.principal,
+    marginBottom: 8,
   },
-
+  input: {
+    backgroundColor: CORES.branco,
+    borderWidth: 1,
+    borderColor: '#D8DEEA',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  textarea: {
+    minHeight: 110,
+    textAlignVertical: 'top',
+  },
   botao: {
-    borderRadius: 14,
-    paddingVertical: 16,
+    backgroundColor: CORES.botao,
+    paddingVertical: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  desativado: {
+    opacity: 0.7,
+  },
+  textoBotao: {
+    color: CORES.branco,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  botaoSecundario: {
+    backgroundColor: '#EDE5F5',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  textoSecundario: {
+    color: CORES.principal,
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  botaoVoltar: {
+    paddingVertical: 14,
     alignItems: 'center',
     marginTop: 8,
-  },
-
-  textoBotao: {
-    fontSize: 17,
-    fontWeight: 'bold',
-  },
-
-  voltar: {
-    alignItems: 'center',
-    marginTop: 20,
-    paddingVertical: 12,
-  },
-
-  textoVoltar: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
